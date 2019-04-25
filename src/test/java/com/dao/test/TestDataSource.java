@@ -13,6 +13,7 @@ public class TestDataSource {
 	@SuppressWarnings("resource")
 	@Test
 	public void testDataSources() throws SQLException{
+		
 		ApplicationContext ac = null;
 		
 		{
