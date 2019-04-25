@@ -2,11 +2,66 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
   <display-name>tbe</display-name>
   <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
     <welcome-file>index.jsp</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+
+  
+  	<!-- 创建spring容器：spring-web.jar -->
+    <!-- 指定spring自定义的配置文件 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>location</param-value>
+	</context-param>
+	<!-- Bootstraps the root web application context before servlet initialization -->
+	<!-- 
+		注册 ServletContext 监听器的实现类 ContextLoaderListener，
+		用于创建 Spring 容器及将创建好的 Spring 容器对象放入到 ServletContext 的域属性空间中
+	 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<!-- 注册字符集过滤器:解决POST请求乱码问题-->
+		<!-- characterEncodingFilter字符编码过滤器 -->
+	<filter>
+		<filter-name>characterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<!--要使用的字符集，一般我们使用UTF-8(保险起见UTF-8最好)-->
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<!--是否强制设置request的编码为encoding，默认false，不建议更改-->
+			<param-name>forceRequestEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<init-param>
+			<!--是否强制设置response的编码为encoding，建议设置为true，下面有关于这个参数的解释-->
+			<param-name>forceResponseEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>characterEncodingFilter</filter-name>
+		<!--这里不能留空或者直接写 ' / ' ，否者不起作用-->
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<!-- 创建springmvc的容器 -->
+	<!-- The front controller of this Spring Web application, responsible for handling all application requests -->
+	<servlet>
+		<servlet-name>springmvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:resource/springmvc.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<!-- Map all requests to the DispatcherServlet for handling -->
+	<servlet-mapping>
+		<servlet-name>springmvc</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
 </web-app>
