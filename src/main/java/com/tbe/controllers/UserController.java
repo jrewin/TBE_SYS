@@ -1,29 +1,40 @@
 package com.tbe.controllers;
 
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tbe.beans.Machine;
 import com.tbe.beans.User;
+import com.tbe.service.MachineService;
+import com.tbe.service.UserService;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
+	
+	@Autowired
+	private UserService userSerivce;
+	
+	@Autowired
+	private MachineService machineService;
 
 	@RequestMapping("/userlogin.do")
 	/*
 	 * 	Controller的void方法中一定要声明HttpServletResponse类型的方法入参！
 	 * 	否则：Spring MVC会认为@RequestMapping注解中指定的路径就是要返回的视图name
 	 */
-	public void userLogin(User user , HttpServletResponse response) throws IOException{
+	public void userLogin(User user , HttpServletResponse response , HttpSession session) throws IOException{
 		
 		Map<String , String> urlMap = new HashMap<String , String>();
 		
@@ -33,13 +44,15 @@ public class UserController {
 		//通过应答对象输出数据给浏览器
 		OutputStream out = response.getOutputStream();
 		
-		/*
-		 *	此处添加调用service验证用户名和密码代码
-		 */
+		User userByGet = userSerivce.getUser(user);
 		
-		if(user.getId().equals("1") && user.getPassword().equals("1")) {
+		List<Machine> machines = machineService.getMachines();
+		
+		if(userByGet != null) {
+			session.setAttribute("user", userByGet);
+			session.setAttribute("machines", machines);
 			urlMap.put("status", "pass");
-			urlMap.put("desUrl", "index.jsp");
+			urlMap.put("desUrl", "page1.jsp");
 		}else {
 			urlMap.put("status", "erro");
 		}

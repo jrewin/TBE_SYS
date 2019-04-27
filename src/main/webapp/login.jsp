@@ -26,8 +26,8 @@
 		<div class="logo"></div>
 	    <div class="login_form">
 	    	<div class="user">
-	        	<input class="text_value" id="id" type="text">
-	            <input class="text_value" id="password" type="password">
+	        	<input class="text_value" id="id" type="text" value="19261">
+	            <input class="text_value" id="password" type="password" value="123456">
 	        </div>
 	        <button class="button" id="submit">登录</button>
 	    </div>
@@ -52,7 +52,7 @@
 		var id = $("#id").val();
 		var password = $("#password").val();
 		if(id!="" && password!=""){
-			var sdata = {"id" : id, "password" : password};
+			var sdata = {"coreid" : id, "pw" : password};
 			$.ajax({
 				url:"user/userlogin.do",
 				data:sdata,
