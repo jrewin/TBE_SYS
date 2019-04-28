@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tbe.beans.Machine;
@@ -60,6 +61,24 @@ public class UserController {
 		mapper.writeValue(out, urlMap);
 	}
 	
+	@RequestMapping("/userlogout.do")
+	public void userlogout(HttpServletResponse response , HttpSession session) throws IOException{
+		
+		session.removeAttribute("user");  
+		
+		Map<String , String> urlMap = new HashMap<String , String>();
+		
+		urlMap.put("desUrl", "login.jsp");
+		
+		//把接收到的User转为json,使用jackson工具库
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//通过应答对象输出数据给浏览器
+		OutputStream out = response.getOutputStream();
+		
+		mapper.writeValue(out, urlMap);
+		
+	}
 	/*
 	//ModelAndView实际上是通过request.setAttribute(modelName, modelValue)放入的
 	public ModelAndView userLogin(User user) {

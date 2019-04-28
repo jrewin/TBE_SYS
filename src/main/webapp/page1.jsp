@@ -22,6 +22,18 @@
 </fieldset>   
 <div style="padding: 20px; background-color: #F2F2F2;">
 	<div class="layui-row layui-col-space15">
+		<div class="layui-col-md12">
+			<div class="layui-card">
+				<div class="layui-card-body" style="text-align: right;">
+					你好！${sessionScope.user.username }
+					&nbsp;&nbsp;
+					|
+					&nbsp;&nbsp;
+					<a href="#" id="logout">切换用户</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+				</div>
+			</div>
+		</div>
 		<div class="layui-col-md6">
 			<div class="layui-card">
 				 <div class="layui-card-body">
@@ -83,9 +95,9 @@ layui.use(['table','form'], function(){
 	  console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
 	  
 	  if(data.field.machineId == "请选择"){
-		  alert("请选择机器...");
+		  layer.alert("请选择机器...", {icon: 7});
 	  }else if(data.field.puid == ""){
-		  alert("请扫描二维码...");
+		  layer.alert("请扫描二维码...", {icon: 7});
 	  }else{
 		  $.ajax({
 			url:"puid/puidSave.do",
@@ -94,9 +106,9 @@ layui.use(['table','form'], function(){
 			dataType:"json",
 			success:function(resp){
 				if(resp.status == "exist"){
-					alert("已经存在！");
+					layer.alert("已经存在！", {icon: 7});
 				}else if(resp.status == "good"){
-					alert("添加成功！");
+					layer.alert("添加成功！", {icon: 6});
 					$("#lot_num").val('');
 					$("#pid_num").val('');
 				 	$("#machine").find("option[value='请选择']").attr("selected",true);
@@ -109,7 +121,7 @@ layui.use(['table','form'], function(){
 				 	$("#MachineName").html(resp.MachineName);
 				 	form.render();
 				}else{
-					alert("添加失败！");
+					layer.alert("添加失败！", {icon: 5});
 				}
 			}
 		})
@@ -122,7 +134,7 @@ layui.use(['table','form'], function(){
 		if (e.keyCode == 13) {
 			var lnn = $("#lot_num").val();
 			if(lnn==""){
-				alert("不能为空！");
+				layer.alert("不能为空！", {icon: 7});
 			}else{
 				var sdata = {"zdcode" : lnn};
 				$.ajax({
@@ -132,7 +144,7 @@ layui.use(['table','form'], function(){
 					dataType:"json",
 					success:function(resp){
 						if(resp.status=="ZcodErro"){
-							alert("二维码不正确，请再次扫描！");
+							layer.alert("二维码不正确，请再次扫描！", {icon: 5});
 							$("#lot_num").val('');
 						}else{
 							$("#pid_num").val(resp.puidCode);
@@ -170,6 +182,23 @@ layui.use(['table','form'], function(){
 			}
 		})
 	});
+	
+	$("#logout").click(function(){
+		layer.confirm('确定注销并切换用户？', {
+			btn: ['确认','取消'] //按钮
+		}, function(index){
+			//location.href = 'user/userlogout.do';
+			$.ajax({
+				url:'user/userlogout.do',
+				type:"post",
+				dataType:"json",
+				success:function(resp){
+					location.href = resp.desUrl;
+				}
+			})
+		});
+		return false;
+	})
 	
 	form.render();
 });

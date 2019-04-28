@@ -22,16 +22,26 @@ public class PuidServiceImpl implements PuidService {
 		return puidMapper.insert(pd)>0?true:false;
 	}
 
+	/**
+	 * 	检索指定机器号的所有数据
+	 * 	条件：机器号（MachineID） and RDT（回料时间）不能为空
+	 * 	注：如果为空，则说明这是新添加的料，还没有回料
+	 */
 	@Override
 	public List<PUID> findByMachineID(PUID pd) {
 
 		PUIDExample example = new PUIDExample();
 		Criteria criteria = example.createCriteria();
 		criteria.andMachineIdEqualTo(pd.getMachineId());
+		criteria.andRDtIsNull();
 		
 		return puidMapper.selectByExample(example);
 	}
 
+	/**
+	 * 	检索指定机器号下是否存在相应的PUID
+	 * 	条件：机器号（MachineID） and PUID
+	 */
 	@Override
 	public boolean isExistThisPUID(PUID pd) {
 		

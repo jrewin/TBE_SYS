@@ -1,75 +1,95 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<!-- Bootstrap css file v2.2.1 -->
-<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>登录</title>
+    <link rel="stylesheet" href="layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="style/admin.css">
+    <link rel="stylesheet" href="style/login.css">
+    <link id="layuicss-layer" rel="stylesheet" href="style/layer.css" media="all">
 
-<!--[if lte IE 6]>
-<!-- bsie css 补丁文件 -->
-<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-ie6.css">
-
-<!-- bsie 额外的 css 补丁文件 -->
-<link rel="stylesheet" type="text/css" href="bootstrap/css/ie.css">
-<![endif]-->
-
-<!-- 登录页样式文件 -->
-<link href="public/css/base.css" rel="stylesheet" type="text/css">
-<link href="public/css/login.css" rel="stylesheet" type="text/css">
-
-<title>登录</title>
 </head>
-<body>
-	<div class="login">
-		<div class="logo"></div>
-	    <div class="login_form">
-	    	<div class="user">
-	        	<input class="text_value" id="id" type="text" value="19261">
-	            <input class="text_value" id="password" type="password" value="123456">
-	        </div>
-	        <button class="button" id="submit">登录</button>
-	    </div>
-	    <div id="tip"></div>
-	    <div class="foot">
-	    	Copyright © 2019 KESM(Tianjin) MIS
-	    </div>
-	</div>
-	<!-- jQuery 1.7.2 or higher -->
-	<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-	
-	<!-- Optional, bootstrap javascript library -->
-	<script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
-	
-	<!--[if lte IE 6]>
-	<!-- bsie js 补丁只在IE6中才执行 -->
-	<script type="text/javascript" src="js/bootstrap-ie.js"></script>
-	<![endif]-->
-	
-	<script>
-	$("#submit").click(function(){
-		var id = $("#id").val();
-		var password = $("#password").val();
-		if(id!="" && password!=""){
-			var sdata = {"coreid" : id, "pw" : password};
-			$.ajax({
+<body layadmin-themealias="default">
+<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+	<form class="layui-form layui-form-pane" action="">
+    <div class="layadmin-user-login-main">
+        <div class="layadmin-user-login-box layadmin-user-login-header">
+            <h2>KESM TBE SYSTEM</h2>
+            <p>KESM Industries (Tianjin) Co.,Ltd</p>
+        </div>
+        <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-username" for="LAY-user-login-username"></label>
+                <input value="19261" type="text" name="coreid" id="LAY-user-login-username" lay-verify="nikename" placeholder="EMPLOYEE ID" class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-password" for="LAY-user-login-password"></label>
+                <input value="123456" type="password" name="pw" id="LAY-user-login-password" lay-verify="pass" placeholder="PASSWORD" class="layui-input">
+            </div>
+            <div class="layui-form-item">
+            	<select name="LV" lay-filter="selectMachine">
+					<option value="1">模块1（加）</option>
+					<option value="2">模块2（回）</option>
+				</select>
+			</div>
+            <div class="layui-form-item">
+                <a href="javascript:void(0);">
+                    <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="loginFrom">LOGIN</button>
+                </a>
+            </div>
+        </div>
+    </div>
+    </form>
+    <div class="layui-trans layadmin-user-login-footer">
+        <p>Copyright © 2019 KESM(Tianjin) MIS</p>
+    </div>
+</div>
+<script src="layui/layui.all.js"></script>
+<script>
+	layui.use(['form','layer'], function(){
+		var form = layui.form
+		,layer = layui.layer
+		,$ = layui.jquery;
+		
+		//自定义验证规则
+    	form.verify({
+            nikename: function(value){
+              if(value.length < 5){
+                return '登录名至少5位以上！';
+              }
+            }
+            ,pass: [/(.+){5,12}$/, '密码必须5到12位']
+            ,repass: function(value){
+                if($('#L_pass').val()!=$('#L_repass').val()){
+                    return '两次密码不一致';
+                }
+            }
+     	});
+
+		//监听提交
+        form.on('submit(loginFrom)', function(data){
+			console.log(data);
+		    $.ajax({
 				url:"user/userlogin.do",
-				data:sdata,
+				data : data.field,
 				type:"post",
 				dataType:"json",
 				success:function(resp){
 					if(resp.status == "pass"){
 						location.href = resp.desUrl;
 					}else{
-						alert("用户名和密码错误！");			
+						layer.alert("登录失败!", {icon: 5});
 					}
 				}
 			})
-		}else{
-			alert("请输入用户名和密码！");			
-		}
-	})
-	</script>
+			return false;
+        });
+        form.render();
+	});
+</script>
 </body>
+
 </html>
