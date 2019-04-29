@@ -29,12 +29,14 @@
                 <label class="layadmin-user-login-icon layui-icon layui-icon-password" for="LAY-user-login-password"></label>
                 <input value="123456" type="password" name="pw" id="LAY-user-login-password" lay-verify="pass" placeholder="PASSWORD" class="layui-input">
             </div>
+            <!-- 
             <div class="layui-form-item">
             	<select name="LV" lay-filter="selectMachine">
 					<option value="1">模块1（加）</option>
 					<option value="2">模块2（回）</option>
 				</select>
 			</div>
+			 -->
             <div class="layui-form-item">
                 <a href="javascript:void(0);">
                     <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="loginFrom">LOGIN</button>
@@ -81,7 +83,7 @@
 					if(resp.status == "pass"){
 						location.href = resp.desUrl;
 					}else{
-						layer.alert("登录失败!", {icon: 5});
+						layer.alert("请核对帐号和密码，以及用户权限，再次尝试!", {icon: 5});
 					}
 				}
 			})

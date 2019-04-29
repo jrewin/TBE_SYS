@@ -29,7 +29,7 @@
 					&nbsp;&nbsp;
 					|
 					&nbsp;&nbsp;
-					<a href="<%=request.getContextPath()%>/page2.jsp">切换到回料</a>
+					<a href="<%=request.getContextPath()%>/page1.jsp">切换到入料</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					|
 					&nbsp;&nbsp;
@@ -56,8 +56,7 @@
 						<div class="layui-form-item">
 							<label class="layui-form-label">扫描二维码</label>
 							<div class="layui-input-block">
-								<!-- 上线后改为只读 -->
-								<input id="lot_num" type="text" name="zdCode" autocomplete="off" placeholder="请扫描二维码..." class="layui-input" required>
+								<input id="lot_num" type="text" name="zdCode" autocomplete="off" placeholder="请扫描二维码..." class="layui-input" required di>
 							</div>
 						</div>
 						<div class="layui-form-item">
@@ -95,11 +94,13 @@
 							</div>
 						</div>
 						<div class="layui-form-item">
-							<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="save">确认</button>
+							<button class="layui-btn layui-btn-normal layui-btn-fluid" lay-submit lay-filter="enter" >确认</button>
 						</div>
 						<div class="layui-form-item">
 							<button type="reset" class="layui-btn layui-btn-primary layui-btn-fluid">重置</button>
 						</div>
+						<input type="hidden" id="matchValue" value="0">
+						<input type="hidden" id="id">
 					</form>
 				 </div>
 			</div>
@@ -107,9 +108,11 @@
 		<div class="layui-col-md6">
 			<div class="layui-card">
 				<div class="layui-card-body">
-				<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-					<legend id="MachineName"></legend>
-				</fieldset>   
+					<div id="match" style="width: 100%;display: block;background-color: gray;height: 40px;line-height: 40px;text-align: center;color: white;font-size: 16px;">
+					</div>
+					<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+						<legend id="MachineName"></legend>
+					</fieldset>   
 					<table class="layui-hide" id="test"></table>
 				</div>
 			</div>
@@ -123,42 +126,52 @@ layui.use(['table','form'], function(){
 	, form = layui.form
 	, $ = layui.$;
 	
-	form.on('submit(save)', function(data){
+	form.on('submit(enter)', function(data){
 	  console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
 	  
+	  var matchValue = $("#matchValue").val();
+	  
+	  /*
 	  if(data.field.machineId == "请选择"){
 		  layer.alert("请选择机器...", {icon: 7});
 	  }else if(data.field.puid == ""){
 		  layer.alert("请扫描二维码...", {icon: 7});
+	  }else
+	  */
+	  if(matchValue==0){
+		  layer.alert("请选择机器并输入二维码，验证匹配后再次提交！", {icon: 7});
 	  }else{
+		  var sid = $("#id").val();
+		  data.field.id=sid;
 		  $.ajax({
-			url:"puid/puidSave.do",
+			url:"puid/puidEnter.do",
 			data:data.field,
 			type:"post",
 			dataType:"json",
 			success:function(resp){
-				if(resp.status == "exist"){
-					layer.alert("已经存在！", {icon: 7});
-				}else if(resp.status == "good"){
-					layer.alert("添加成功！", {icon: 6});
-					$("#lot_num").val('');
-					$("#pid_num").val('');
-					$("#lot").val('');
-					$("#qty").val('');
-					$("#condeno").val('');
-					$("#type").val('');
-				 	$("#machine").find("option[value='请选择']").attr("selected",true);
-				 	tableIns.reload({
-						url:'puid/findByMachineId.do'
-						,where: { //设定异步数据接口的额外参数，任意设
-							machineId: resp.MachineId
-						}
-					});
-				 	$("#MachineName").html(resp.MachineName);
-				 	form.render();
+				if(resp.status == "good"){
+					layer.alert("处理成功！", {icon: 6});
 				}else{
-					layer.alert("添加失败！", {icon: 5});
+					layer.alert("处理失败！", {icon: 5});
 				}
+				$("#lot_num").val('');
+				$("#pid_num").val('');
+				$("#lot").val('');
+				$("#qty").val('');
+				$("#condeno").val('');
+				$("#type").val('');
+			 	$("#machine").find("option[value='请选择']").attr("selected",true);
+			 	$("#match").css("background-color" ,  "gray");
+				$("#match").html("");
+				$("#matchValue").val(0);
+			 	tableIns.reload({
+					url:'puid/findByMachineId.do'
+					,where: { //设定异步数据接口的额外参数，任意设
+						machineId: resp.MachineId
+					}
+				});
+			 	$("#MachineName").html(resp.MachineName);
+			 	form.render();
 			}
 		})
 	  }
@@ -169,12 +182,16 @@ layui.use(['table','form'], function(){
 	$("#lot_num").keypress(function (e) {
 		if (e.keyCode == 13) {
 			var lnn = $("#lot_num").val();
-			if(lnn==""){
-				layer.alert("不能为空！", {icon: 7});
+			var machineId = $("#machine").val();
+			
+			if(machineId == "请选择"){
+				layer.alert("请选择机器...", {icon: 7});
+			}else if(lnn==""){
+				layer.alert("请扫描二维码...", {icon: 7});
 			}else{
-				var sdata = {"zdcode" : lnn};
+				var sdata = {"machineId" : machineId , "zdCode" : lnn};
 				$.ajax({
-					url:"puid/puidCheck.do",
+					url:"puid/puidCheckForEnter.do",
 					data:sdata,
 					type:"post",
 					dataType:"json",
@@ -188,6 +205,16 @@ layui.use(['table','form'], function(){
 							$("#qty").val(resp.qty);
 							$("#condeno").val(resp.condeno);
 							$("#type").val(resp.type);
+							if(resp.match=="match"){
+								$("#match").css("background-color" ,  "#009688");
+								$("#match").html("匹配");
+								$("#matchValue").val(1);
+								$("#id").val(resp.id);
+							}else{
+								$("#match").css("background-color" ,  "#FFB800");
+								$("#match").html("不匹配");
+								$("#matchValue").val(0);
+							}
 						}
 					}
 				})

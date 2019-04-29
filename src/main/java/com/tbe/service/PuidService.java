@@ -11,4 +11,8 @@ public interface PuidService {
 	List<PUID> findByMachineID(PUID pd);
 	
 	boolean isExistThisPUID(PUID pd);
+	
+	PUID findOneByMachineIDAndRDt(PUID pd);
+	
+	boolean updatePUID(PUID puid);
 }

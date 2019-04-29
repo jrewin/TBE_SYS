@@ -45,6 +45,8 @@ public class UserController {
 		//通过应答对象输出数据给浏览器
 		OutputStream out = response.getOutputStream();
 		
+		user.setLv(3);
+		
 		User userByGet = userSerivce.getUser(user);
 		
 		List<Machine> machines = machineService.getMachines();

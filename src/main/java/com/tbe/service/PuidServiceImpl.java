@@ -53,4 +53,24 @@ public class PuidServiceImpl implements PuidService {
 		return puidMapper.selectByExample(example).size()!=0?true:false;
 	}
 
+	@Override
+	public PUID findOneByMachineIDAndRDt(PUID pd) {
+
+		PUIDExample example = new PUIDExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andMachineIdEqualTo(pd.getMachineId());
+		criteria.andZdCodeEqualTo(pd.getZdCode());
+		criteria.andRDtIsNull();
+		
+		List<PUID> p = puidMapper.selectByExample(example);
+		
+		return p.size()!=0?p.get(0):null;
+	}
+
+	@Override
+	public boolean updatePUID(PUID puid) {
+
+		return puidMapper.updateByPrimaryKey(puid)>0?true:false;
+	}
+
 }
