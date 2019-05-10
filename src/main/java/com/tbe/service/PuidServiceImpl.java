@@ -60,6 +60,7 @@ public class PuidServiceImpl implements PuidService {
 		Criteria criteria = example.createCriteria();
 		criteria.andMachineIdEqualTo(pd.getMachineId());
 		criteria.andZdCodeEqualTo(pd.getZdCode());
+		criteria.andCheckIdIsNotNull();
 		criteria.andRDtIsNull();
 		
 		List<PUID> p = puidMapper.selectByExample(example);
@@ -71,6 +72,24 @@ public class PuidServiceImpl implements PuidService {
 	public boolean updatePUID(PUID puid) {
 
 		return puidMapper.updateByPrimaryKey(puid)>0?true:false;
+	}
+
+	@Override
+	public PUID findPUIDByID(PUID pd) {
+		
+		return puidMapper.selectByPrimaryKey(pd.getId());
+	}
+
+	@Override
+	public List<PUID> findSameBoxPUID() {
+		
+		PUIDExample example = new PUIDExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andRDtIsNull();
+	
+		List<PUID> p = puidMapper.selectByExample(example);
+		
+		return p;
 	}
 
 }

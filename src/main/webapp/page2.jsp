@@ -32,6 +32,12 @@
 					<a href="<%=request.getContextPath()%>/page1.jsp">切换到入料</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					|
+					<%--
+					&nbsp;&nbsp;
+					<a href="<%=request.getContextPath()%>/find1.jsp">检索</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					|
+					 --%>
 					&nbsp;&nbsp;
 					<a href="#" id="logout">注销</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
@@ -48,7 +54,7 @@
 								<select name="machineId" id="machine" lay-filter="selectMachine">
 									<option value="请选择"></option>
 									<c:forEach var="machine" items="${sessionScope.machines}">
-										<option value="${machine.id }">${machine.maName}</option>
+										<option value="${machine.maName }">${machine.maName}</option>
 									</c:forEach>
 								</select>
 							</div>

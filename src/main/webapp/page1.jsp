@@ -32,6 +32,12 @@
 					<a href="<%=request.getContextPath()%>/page2.jsp">切换到回料</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					|
+					<%-- 
+					&nbsp;&nbsp;
+					<a href="<%=request.getContextPath()%>/find1.jsp">检索</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					|
+					--%>
 					&nbsp;&nbsp;
 					<a href="#" id="logout">注销</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
@@ -48,7 +54,7 @@
 								<select name="machineId" id="machine" lay-filter="selectMachine">
 									<option value="请选择"></option>
 									<c:forEach var="machine" items="${sessionScope.machines}">
-										<option value="${machine.id }">${machine.maName}</option>
+										<option value="${machine.maName }">${machine.maName}</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -156,6 +162,8 @@ layui.use(['table','form'], function(){
 					});
 				 	$("#MachineName").html(resp.MachineName);
 				 	form.render();
+				}else if(resp.status == "badbox"){
+					layer.alert("添加失败，不能同时添加两批料！", {icon: 7});
 				}else{
 					layer.alert("添加失败！", {icon: 5});
 				}

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.alibaba.druid.sql.visitor.functions.Char;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tbe.beans.PUID;
 import com.tbe.beans.User;
@@ -159,9 +160,8 @@ public class PuidController {
 		
 		mapper.writeValue(out, resultMap);
 	}
-	
 	@RequestMapping("/puidSave.do")
-	public void puidSave(PUID puid, HttpServletResponse response) throws IOException {
+	public void puidSave(PUID puid, HttpServletResponse response , HttpSession session) throws IOException {
 		
 		Map<String , String> resultMap = new HashMap<String , String>();
 		
@@ -171,16 +171,42 @@ public class PuidController {
 		//通过应答对象输出数据给浏览器
 		OutputStream out = response.getOutputStream();
 		
-		//需要先用puid和machineid进行判断，库中没有符合条件的再进行添加
-		if(puidService.isExistThisPUID(puid)) {
-			resultMap.put("status", "exist");
-		}else {
+		User user = (User)session.getAttribute("user");
+		Date date = new Date();
+		puid.setoDt(date);
+		puid.setOperatorId(user.getCoreid());
+		//是否存在这一批料（PUID除去前两位）
+		String puidstr = puid.getPuid();
+		puidstr = puidstr.substring(2);
+		List<PUID> ps = puidService.findSameBoxPUID();
+		//如果不存在，则进入添加环节
+		if(ps.size()==0) {
+			//需要先用puid和machineid进行判断，库中没有符合条件的再进行添加
 			if(puidService.addPUID(puid)) {
 				resultMap.put("status", "good");
 				resultMap.put("MachineId", puid.getMachineId());
-				resultMap.put("MachineName", machineService.getMachineById(Integer.parseInt(puid.getMachineId())).getMaName());
+				resultMap.put("MachineName", puid.getMachineId());
 			}else {
 				resultMap.put("status", "erro");
+			}
+		}else{ //如果存在，则比对录入的批次和数据库存在的批次是否相同，如果相同则添加，如果不同则提示，【不能同时派两批料】
+			String psPuidStr = ps.get(0).getPuid();
+			psPuidStr = psPuidStr.substring(2);
+			if(psPuidStr.equals(puidstr)) {//批次相同，进行添加
+				//先用puid和machineid进行判断，库中没有符合条件的再进行添加
+				if(puidService.isExistThisPUID(puid)) {
+					resultMap.put("status", "exist");
+				}else {
+					if(puidService.addPUID(puid)) {
+						resultMap.put("status", "good");
+						resultMap.put("MachineId", puid.getMachineId());
+						resultMap.put("MachineName", puid.getMachineId());
+					}else {
+						resultMap.put("status", "erro");
+					}
+				}
+			}else {//批次不相同，不能添加
+				resultMap.put("status", "badbox");
 			}
 		}
 		
@@ -198,16 +224,17 @@ public class PuidController {
 		//通过应答对象输出数据给浏览器
 		OutputStream out = response.getOutputStream();
 		
+		PUID p = puidService.findPUIDByID(puid);
 		User user = (User)session.getAttribute("user");
 		Date date = new Date();
-		puid.setrDt(date);
-		puid.setrId(user.getUsername());
+		p.setrDt(date);
+		p.setrId(user.getCoreid());
 		
 		//需要先用puid和machineid进行判断，库中没有符合条件的再进行添加
-		if(puidService.updatePUID(puid)) {
+		if(puidService.updatePUID(p)) {
 			resultMap.put("status", "good");
 			resultMap.put("MachineId", puid.getMachineId());
-			resultMap.put("MachineName", machineService.getMachineById(Integer.parseInt(puid.getMachineId())).getMaName());
+			resultMap.put("MachineName",puid.getMachineId());
 		}else {
 			resultMap.put("status", "false");
 		}
@@ -242,7 +269,7 @@ public class PuidController {
 		
 		Map<String , Object> resultMap = new HashMap<String , Object>();
 		
-		resultMap.put("MachineName", machineService.getMachineById(Integer.parseInt(puid.getMachineId())).getMaName());
+		resultMap.put("MachineName", puid.getMachineId());
 		
 		//把接收到的User转为json,使用jackson工具库
 		ObjectMapper mapper = new ObjectMapper();
@@ -252,4 +279,27 @@ public class PuidController {
 		mapper.writeValue(out, resultMap);
 		
 	}
+	
+	@RequestMapping("/findPuidCheckByPUID.do")
+	public void findPuidCheckByPUID(PUID puid , HttpServletResponse response ,HttpSession session) throws IOException {
+		
+//		List<PUID> puids = puidService.findPuidCheckByPUIDAndDate(puid);
+//		
+//		Map<String , Object> resultMap = new HashMap<String , Object>();
+//		
+//		//把接收到的User转为json,使用jackson工具库
+//		ObjectMapper mapper = new ObjectMapper();
+//		
+//		//通过应答对象输出数据给浏览器
+//		OutputStream out = response.getOutputStream();
+//		
+//		resultMap.put("code", 0);
+//		resultMap.put("msg", "");
+//		resultMap.put("count", 29);
+//		resultMap.put("data", puids);
+//		
+//		mapper.writeValue(out, resultMap);
+		
+	}
+	
 }

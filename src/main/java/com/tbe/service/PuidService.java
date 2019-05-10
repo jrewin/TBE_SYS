@@ -15,4 +15,8 @@ public interface PuidService {
 	PUID findOneByMachineIDAndRDt(PUID pd);
 	
 	boolean updatePUID(PUID puid);
+	
+	PUID findPUIDByID(PUID pd);
+	
+	List<PUID> findSameBoxPUID();
 }

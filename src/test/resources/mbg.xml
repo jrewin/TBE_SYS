@@ -41,10 +41,10 @@
 		<property name="enableSubPackages" value="true" />
     </javaClientGenerator>
 
-	<!-- 指定要逆向分析哪些表：根据表要创建javaBean -->
+	<!-- 指定要逆向分析哪些表：根据表要创建javaBean 
     <table tableName="machine_tb" domainObjectName="Machine"></table>
     <table tableName="puid_check" domainObjectName="PUID"></table>
-    <table tableName="pw_check" domainObjectName="User"></table>
+    <table tableName="pw_check" domainObjectName="User"></table>-->
     <table tableName="records" domainObjectName="Record"></table>
   </context>
 </generatorConfiguration>
