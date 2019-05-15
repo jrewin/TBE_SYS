@@ -12,11 +12,12 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tbe.beans.Local;
 import com.tbe.beans.Machine;
 import com.tbe.beans.User;
+import com.tbe.service.LocalService;
 import com.tbe.service.MachineService;
 import com.tbe.service.UserService;
 
@@ -29,6 +30,9 @@ public class UserController {
 	
 	@Autowired
 	private MachineService machineService;
+	
+	@Autowired
+	private LocalService localService;
 
 	@RequestMapping("/userlogin.do")
 	/*
@@ -51,11 +55,15 @@ public class UserController {
 		
 		List<Machine> machines = machineService.getMachines();
 		
+		List<Local> locals = localService.getLocals();
+		
 		if(userByGet != null) {
 			session.setAttribute("user", userByGet);
 			session.setAttribute("machines", machines);
+			session.setAttribute("locals", locals);
 			urlMap.put("status", "pass");
-			urlMap.put("desUrl", "page1.jsp");
+			//urlMap.put("desUrl", "page1.jsp");
+			urlMap.put("desUrl", "switch.jsp");
 		}else {
 			urlMap.put("status", "erro");
 		}

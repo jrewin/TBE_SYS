@@ -29,12 +29,18 @@
 					&nbsp;&nbsp;
 					|
 					&nbsp;&nbsp;
-					<a href="<%=request.getContextPath()%>/page1.jsp">切换到入料</a>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					|
+					<a href="<%=request.getContextPath()%>/switch.jsp">切换到主页</a>
 					&nbsp;&nbsp;
+					<%-- 
 					<a href="<%=request.getContextPath()%>/page2.jsp">切换到回料</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
+					|
+					
+					&nbsp;&nbsp;
+					<a href="<%=request.getContextPath()%>/find1.jsp">检索</a>
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					|
+					--%>
 					|
 					&nbsp;&nbsp;
 					<a href="#" id="logout">注销</a>

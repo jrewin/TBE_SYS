@@ -21,7 +21,7 @@
   <legend>KESM TBE DATA</legend>
 </fieldset>   
 <div style="padding: 20px; background-color: #F2F2F2;">
-	<div class="layui-row layui-col-space15">
+	<div class="layui-row layui-col-space15" style="text-align: center;">
 		<div class="layui-col-md12">
 			<div class="layui-card">
 				<div class="layui-card-body" style="text-align: right;">
@@ -29,106 +29,60 @@
 					&nbsp;&nbsp;
 					|
 					&nbsp;&nbsp;
-					<a href="<%=request.getContextPath()%>/switch.jsp">切换到主页</a>
-					&nbsp;&nbsp;
-					<%-- 
-					<a href="<%=request.getContextPath()%>/page2.jsp">切换到回料</a>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					|
-					
-					&nbsp;&nbsp;
-					<a href="<%=request.getContextPath()%>/find1.jsp">检索</a>
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					|
-					--%>
-					|
-					&nbsp;&nbsp;
 					<a href="#" id="logout">注销</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 				</div>
 			</div>
 		</div>
-		<div class="layui-col-md6">
-			<div class="layui-card">
-				 <div class="layui-card-body">
-				   <form class="layui-form layui-form-pane" action="">
-				   		<div class="layui-form-item">
-							<label class="layui-form-label">选择机器</label>
-							<div class="layui-input-block">
-								<select name="machineId" id="machine" lay-filter="selectMachine">
-									<option value="请选择"></option>
-									<c:forEach var="machine" items="${sessionScope.machines}">
-										<option value="${machine.maName }">${machine.maName}</option>
-									</c:forEach>
-								</select>
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<label class="layui-form-label">扫描二维码</label>
-							<div class="layui-input-block">
-								<!-- 上线后改为只读 -->
-								<input id="lot_num" type="text" name="zdCode" autocomplete="off" placeholder="请扫描二维码..." class="layui-input" required>
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<label class="layui-form-label">PUID</label>
-							<div class="layui-input-block">
-								<input id="pid_num" type="text" name="puid" autocomplete="off" readonly="readonly" class="layui-input" required>
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<div class="layui-inline">
-								<label class="layui-form-label">LOT</label>
-								<div class="layui-input-block">
-									<input type="text" readonly="readonly" id="lot" name="lot" autocomplete="off" class="layui-input">
-								</div>
-							</div>
-							<div class="layui-inline">
-								<label class="layui-form-label">QTY</label>
-								<div class="layui-input-inline">
-									<input type="text" readonly="readonly" id="qty" name="qty" autocomplete="off" class="layui-input">
-								</div>
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<div class="layui-inline">
-								<label class="layui-form-label">TYPE</label>
-								<div class="layui-input-block">
-									<input type="text" readonly="readonly" id="type" name="type" autocomplete="off" class="layui-input">
-								</div>
-							</div>
-							<div class="layui-inline">
-								<label class="layui-form-label">CODENO</label>
-								<div class="layui-input-inline">
-									<input type="text" readonly="readonly" id="condeno" name="condeno" autocomplete="off" class="layui-input">
-								</div>
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<div class="layui-inline">
-								<label class="layui-form-label">LOCAL</label>
-								<div class="layui-input-block">
-									<input type="text" style="text-align: center;" readonly="readonly" id="local" name="local" autocomplete="off" class="layui-input">
-								</div>
-							</div>
-						</div>
-						<div class="layui-form-item">
-							<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="save">确认</button>
-						</div>
-						<div class="layui-form-item">
-							<button type="reset" class="layui-btn layui-btn-primary layui-btn-fluid">重置</button>
-						</div>
-					</form>
-				 </div>
-			</div>
-		</div>
-		<div class="layui-col-md6">
+		<div class="layui-col-md3">
 			<div class="layui-card">
 				<div class="layui-card-body">
-				<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-					<legend id="MachineName"></legend>
-				</fieldset>   
-					<table class="layui-hide" id="test"></table>
+					<a href="<%=request.getContextPath()%>/page1.jsp" class="x-admin-backlog-body">
+                        <img src="img/out.png"  style="height: 70px;"/>
+                        <br/>
+                        <span class="tip">出料</span>
+                    </a>
+				</div>
+			</div>
+		</div>	 
+		<div class="layui-col-md3">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<a href="<%=request.getContextPath()%>/page2.jsp" class="x-admin-backlog-body">
+                        <img src="img/in.png"  style="height: 70px;"/>
+                        <br/>
+                        <span class="tip">回料</span>
+                    </a>
+				</div>
+			</div>
+		</div>
+		<c:if test="${sessionScope.user.lv == 4 }">
+		<div class="layui-col-md3">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<a href="<%=request.getContextPath()%>/find1.jsp" class="x-admin-backlog-body">
+                        <img src="img/find.png"  style="height: 70px;"/>
+                        <br/>
+                        <span class="tip">查询</span>
+                    </a>
+				</div>
+			</div>
+		</div>
+		</c:if>
+		<div class="layui-col-md3">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<a href="#" class="x-admin-backlog-body">
+						<%--
+					<a href="<%=request.getContextPath()%>/nxp.jsp" class="x-admin-backlog-body">
+                        <img src="img/nxp.png"  style="height: 70px;"/>
+                        <br/>
+                        <span class="tip">出货</span>
+                        --%>
+                        <img src="img/ellipsis.png"  style="height: 70px;"/>
+                        <br/>
+                        <span class="tip">more...</span>
+                    </a>
 				</div>
 			</div>
 		</div>
@@ -208,8 +162,6 @@ layui.use(['table','form'], function(){
 							$("#qty").val(resp.qty);
 							$("#condeno").val(resp.condeno);
 							$("#type").val(resp.type);
-							$("#local").val(resp.local);
-							$("#local").css("background-color" , resp.localcolor);
 						}
 					}
 				})

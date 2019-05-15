@@ -52,7 +52,10 @@ public class PuidServiceImpl implements PuidService {
 		
 		return puidMapper.selectByExample(example).size()!=0?true:false;
 	}
-
+	
+	/**
+	 * 	根据机器号和没有入库信息进行检索
+	 */
 	@Override
 	public PUID findOneByMachineIDAndRDt(PUID pd) {
 
@@ -90,6 +93,19 @@ public class PuidServiceImpl implements PuidService {
 		List<PUID> p = puidMapper.selectByExample(example);
 		
 		return p;
+	}
+
+	@Override
+	public PUID findOneBy2DCodeAndStoreck(String zdcode) {
+		
+		PUIDExample example = new PUIDExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andZdCodeEqualTo(zdcode);
+		criteria.andStoreckEqualTo(1);
+		
+		List<PUID> p = puidMapper.selectByExample(example);
+		
+		return p.size()==0?null:p.get(0);
 	}
 
 }

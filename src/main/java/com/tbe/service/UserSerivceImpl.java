@@ -26,7 +26,7 @@ public class UserSerivceImpl implements UserService{
 		Criteria criteria = example.createCriteria();
 		criteria.andCoreidEqualTo(u.getCoreid());
 		criteria.andPwEqualTo(u.getPw());
-		criteria.andLvEqualTo(3);
+		criteria.andLvGreaterThanOrEqualTo(3);
 
 		List<User> users = userMapper.selectByExample(example);
 		

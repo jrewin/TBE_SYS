@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.alibaba.druid.sql.visitor.functions.Char;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tbe.beans.Local;
 import com.tbe.beans.PUID;
 import com.tbe.beans.User;
-import com.tbe.service.MachineService;
+import com.tbe.service.LocalService;
 import com.tbe.service.PuidService;
 
 @Controller
@@ -29,7 +29,7 @@ public class PuidController {
 	private PuidService puidService;
 	
 	@Autowired
-	private MachineService machineService ;
+	private LocalService localService;
 	
 	@RequestMapping("/puidCheck.do")
 	public void puidCheck(String zdcode , HttpServletResponse response) throws IOException {
@@ -86,6 +86,18 @@ public class PuidController {
 				
 			}
 		}
+		
+		PUID puid = puidService.findOneBy2DCodeAndStoreck(zdcode);
+		
+		if(puid==null) {
+			resultMap.put("local", "库中无记录");
+			resultMap.put("localcolor", "#F2F2F2"); //第一次入库，灰色
+		}else {
+			Local local = localService.findLocalByLN(puid.getLocal());
+			resultMap.put("local", local.getlN());
+			resultMap.put("localcolor", local.getColor());
+		}
+		
 		resultMap.put("zdCode", zdcode);
 		
 		mapper.writeValue(out, resultMap);
@@ -179,6 +191,7 @@ public class PuidController {
 		String puidstr = puid.getPuid();
 		puidstr = puidstr.substring(2);
 		List<PUID> ps = puidService.findSameBoxPUID();
+		
 		//如果不存在，则进入添加环节
 		if(ps.size()==0) {
 			//需要先用puid和machineid进行判断，库中没有符合条件的再进行添加
@@ -210,6 +223,12 @@ public class PuidController {
 			}
 		}
 		
+		PUID p = puidService.findOneBy2DCodeAndStoreck(puid.getZdCode());
+		
+		if(p != null) {
+			//更新 p 的 storeck字段为0
+		}
+		
 		mapper.writeValue(out, resultMap);
 	}
 	
@@ -229,7 +248,16 @@ public class PuidController {
 		Date date = new Date();
 		p.setrDt(date);
 		p.setrId(user.getCoreid());
+		p.setLocal(puid.getLocal());
+		p.setStoreck(1);
 		
+		//先检索此PUID在库中是否存在storeck为1的记录
+		PUID pp = puidService.findOneBy2DCodeAndStoreck(p.getZdCode());
+		if(null != pp) {
+			//如果存在，先将其storeck更新为0
+			pp.setStoreck(0);
+			puidService.updatePUID(pp);
+		}
 		//需要先用puid和machineid进行判断，库中没有符合条件的再进行添加
 		if(puidService.updatePUID(p)) {
 			resultMap.put("status", "good");

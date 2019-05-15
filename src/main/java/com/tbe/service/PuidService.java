@@ -19,4 +19,6 @@ public interface PuidService {
 	PUID findPUIDByID(PUID pd);
 	
 	List<PUID> findSameBoxPUID();
+	
+	PUID findOneBy2DCodeAndStoreck(String zdcode);
 }

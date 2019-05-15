@@ -29,15 +29,19 @@
 					&nbsp;&nbsp;
 					|
 					&nbsp;&nbsp;
-					<a href="<%=request.getContextPath()%>/page1.jsp">切换到入料</a>
+					<a href="<%=request.getContextPath()%>/switch.jsp">切换到主页</a>
+					&nbsp;&nbsp;
+					<%-- 
+					<a href="<%=request.getContextPath()%>/page2.jsp">切换到回料</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					|
-					<%--
+					
 					&nbsp;&nbsp;
 					<a href="<%=request.getContextPath()%>/find1.jsp">检索</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 					|
-					 --%>
+					--%>
+					|
 					&nbsp;&nbsp;
 					<a href="#" id="logout">注销</a>
 					&nbsp;&nbsp;&nbsp;&nbsp;
@@ -100,6 +104,24 @@
 							</div>
 						</div>
 						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">LOCAL</label>
+								<div class="layui-inline">
+									<select name="local" id="local" lay-filter="selectlocal">
+										<option value="请选择"></option>
+										<c:forEach var="local" items="${sessionScope.locals}">
+											<option value="${local.lN }|${local.color }">${local.lN}</option>
+										</c:forEach>
+									</select>
+								</div>
+							</div>
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" readonly="readonly" id="showcolor" class="layui-input">
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
 							<button class="layui-btn layui-btn-normal layui-btn-fluid" lay-submit lay-filter="enter" >确认</button>
 						</div>
 						<div class="layui-form-item">
@@ -133,7 +155,7 @@ layui.use(['table','form'], function(){
 	, $ = layui.$;
 	
 	form.on('submit(enter)', function(data){
-	  console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+	  //console.log(data.field.local) //当前容器的全部表单字段，名值对形式：{name: value}
 	  
 	  var matchValue = $("#matchValue").val();
 	  
@@ -144,11 +166,18 @@ layui.use(['table','form'], function(){
 		  layer.alert("请扫描二维码...", {icon: 7});
 	  }else
 	  */
-	  if(matchValue==0){
+	  
+	  if(data.field.local == '请选择'){
+		  layer.alert("请选择放置的位置！", {icon: 7});
+	  }else if(matchValue==0){
 		  layer.alert("请选择机器并输入二维码，验证匹配后再次提交！", {icon: 7});
 	  }else{
 		  var sid = $("#id").val();
 		  data.field.id=sid;
+		  let lc = data.field.local.split('|');
+		  data.field.local = lc[0];
+		  console.log(data.field);
+		  
 		  $.ajax({
 			url:"puid/puidEnter.do",
 			data:data.field,
@@ -160,6 +189,7 @@ layui.use(['table','form'], function(){
 				}else{
 					layer.alert("处理失败！", {icon: 5});
 				}
+				$("#local").find("option[value='请选择']").attr("selected",true);
 				$("#lot_num").val('');
 				$("#pid_num").val('');
 				$("#lot").val('');
@@ -170,6 +200,7 @@ layui.use(['table','form'], function(){
 			 	$("#match").css("background-color" ,  "gray");
 				$("#match").html("");
 				$("#matchValue").val(0);
+				$("#showcolor").css("background-color" ,  "#FFFFFF");
 			 	tableIns.reload({
 					url:'puid/findByMachineId.do'
 					,where: { //设定异步数据接口的额外参数，任意设
@@ -181,7 +212,7 @@ layui.use(['table','form'], function(){
 			}
 		})
 	  }
-	  
+	   
 	  return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
 	});
 	
@@ -257,6 +288,13 @@ layui.use(['table','form'], function(){
 		$("#lot_num").focus();
 	});
 	
+	form.on('select(selectlocal)', function(data){ 
+		var dt = data.value.split('|');
+		console.log(dt[1]);
+		$("#showcolor").css("background-color" , dt[1]);
+		
+	});
+
 	$("#logout").click(function(){
 		layer.confirm('确定注销并切换用户？', {
 			btn: ['确认','取消'] //按钮

@@ -31,4 +31,14 @@ public class RecordsServiceImpl implements RecordsService {
 		return mapper.selectByExample(example);
 	}
 
+	@Transactional
+	@Override
+	public boolean UpdateRecordBySelecttion(Record record) {
+
+		RecordExample example = new RecordExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andIdEqualTo(record.getId());
+		return mapper.updateByExampleSelective(record, example)==1?true:false;
+	}
+
 }
