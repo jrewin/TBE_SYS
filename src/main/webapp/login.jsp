@@ -23,11 +23,11 @@
         <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
             <div class="layui-form-item">
                 <label class="layadmin-user-login-icon layui-icon layui-icon-username" for="LAY-user-login-username"></label>
-                <input value="19261" type="text" name="coreid" id="LAY-user-login-username" lay-verify="nikename" placeholder="EMPLOYEE ID" class="layui-input">
+                <input type="text" name="coreid" id="LAY-user-login-username" lay-verify="nikename" placeholder="EMPLOYEE ID" class="layui-input">
             </div>
             <div class="layui-form-item">
                 <label class="layadmin-user-login-icon layui-icon layui-icon-password" for="LAY-user-login-password"></label>
-                <input value="123456" type="password" name="pw" id="LAY-user-login-password" lay-verify="pass" placeholder="PASSWORD" class="layui-input">
+                <input type="password" name="pw" id="LAY-user-login-password" lay-verify="pass" placeholder="PASSWORD" class="layui-input">
             </div>
             <!-- 
             <div class="layui-form-item">

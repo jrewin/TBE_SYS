@@ -30,7 +30,7 @@ public class PuidController {
 	
 	@Autowired
 	private LocalService localService;
-	
+
 	@RequestMapping("/puidCheck.do")
 	public void puidCheck(String zdcode , HttpServletResponse response) throws IOException {
 		
@@ -45,6 +45,8 @@ public class PuidController {
 		//[)>06$1P935314545518$30PSC516725CDWER$Q1000$9D1915$1TTZ36962.1$30T$30Q$31P-3/260$31TU-X-D$32TO371$30D$31D$33T04CT4LS15KFG00$34T
 		
 		String[] zdtimes = zdcode.split("");
+		
+		/*
 		int total$ = 0;
 		for(String s : zdtimes) {
 			if("$".equals(s))
@@ -54,37 +56,40 @@ public class PuidController {
 		if(zdcode.length() != 127 || total$ != 14){
 			resultMap.put("status", "ZcodErro");
 		}else{
-			String[] zdcodes =zdcode.split("\\$");
-			for(String s : zdcodes) {
-				
-				String rs1 = s.substring(0, 1);
-				String rs2 = s.substring(0, 2);
-				String rs3 = s.substring(0, 3);
-				
-				if(rs1.equals("Q")){
-					String qty = s.substring(1);
-					resultMap.put("qty", qty);
-				}
-				
-				if(rs2.equals("1T")){
-					String lot = s.substring(2);
-					resultMap.put("lot", lot);
-				}
-				if(rs2.equals("1P")){
-					String condeno = s.substring(2);
-					resultMap.put("condeno", condeno);
-				}
-				
-				if(rs3.equals("33T")){
-					String puidCode = s.substring(3);
-					resultMap.put("puidCode", puidCode);
-				}
-				if(rs3.equals("30P")){
-					String type = s.substring(3);
-					resultMap.put("type", type);
-				}
-				
+			
+		}
+		*/
+		
+		String[] zdcodes =zdcode.split("\\$");
+		for(String s : zdcodes) {
+			
+			String rs1 = s.substring(0, 1);
+			String rs2 = s.substring(0, 2);
+			String rs3 = s.substring(0, 3);
+			
+			if(rs1.equals("Q")){
+				String qty = s.substring(1);
+				resultMap.put("qty", qty);
 			}
+			
+			if(rs2.equals("1T")){
+				String lot = s.substring(2);
+				resultMap.put("lot", lot);
+			}
+			if(rs2.equals("1P")){
+				String condeno = s.substring(2);
+				resultMap.put("condeno", condeno);
+			}
+			
+			if(rs3.equals("33T")){
+				String puidCode = s.substring(3);
+				resultMap.put("puidCode", puidCode);
+			}
+			if(rs3.equals("30P")){
+				String type = s.substring(3);
+				resultMap.put("type", type);
+			}
+			
 		}
 		
 		PUID puid = puidService.findOneBy2DCodeAndStoreck(zdcode);
@@ -118,6 +123,7 @@ public class PuidController {
 		
 		String zdcode = puid.getZdCode();
 		
+		/*
 		String[] zdtimes = zdcode.split("");
 		int total$ = 0;
 		for(String s : zdtimes) {
@@ -128,37 +134,68 @@ public class PuidController {
 		if(zdcode.length() != 127 || total$ != 14){
 			resultMap.put("status", "ZcodErro");
 		}else{
-			String[] zdcodes =zdcode.split("\\$");
-			for(String s : zdcodes) {
+			
+		}
+		*/
+		
+		String[] zdcodes =zdcode.split("\\$");
+		for(String s : zdcodes) {
+			
+			String rs1 = s.substring(0, 1);
+			String rs2 = s.substring(0, 2);
+			String rs3 = s.substring(0, 3);
+			
+			if(rs1.equals("Q")){
+				String qty = s.substring(1);
+				resultMap.put("qty", qty);
+			}
+			
+			if(rs2.equals("1T")){
+				String lot = s.substring(2);
+				resultMap.put("lot", lot);
+			}
+			if(rs2.equals("1P")){
+				String condeno = s.substring(2);
+				resultMap.put("condeno", condeno);
+			}
+			
+			if(rs3.equals("33T")){
+				String puidCode = s.substring(3);
+				resultMap.put("puidCode", puidCode);
+
+				//是否存在这一批料（PUID除去前两位）
+				String puidstr = puidCode.substring(2);
+				List<PUID> ps = puidService.findSameBoxPUID(puidstr , puid.getMachineId());
 				
-				String rs1 = s.substring(0, 1);
-				String rs2 = s.substring(0, 2);
-				String rs3 = s.substring(0, 3);
-				
-				if(rs1.equals("Q")){
-					String qty = s.substring(1);
-					resultMap.put("qty", qty);
+				//如果存在
+				if(ps.size()!=0) {
+					
+					String localStr = null;
+					
+					for(PUID pd : ps) {
+						if(pd.getLocal() != null) {
+							localStr = pd.getLocal();
+							break;
+						}
+					}
+					
+					//如果这盒料已经在库中有位置，则后面录入的料只能存在相同的位置
+					if(localStr != null) {
+						resultMap.put("local", localStr);
+					}else {
+						resultMap.put("local", "none");
+					}
+				}else {
+					resultMap.put("local", "none");
 				}
 				
-				if(rs2.equals("1T")){
-					String lot = s.substring(2);
-					resultMap.put("lot", lot);
-				}
-				if(rs2.equals("1P")){
-					String condeno = s.substring(2);
-					resultMap.put("condeno", condeno);
-				}
-				
-				if(rs3.equals("33T")){
-					String puidCode = s.substring(3);
-					resultMap.put("puidCode", puidCode);
-				}
-				if(rs3.equals("30P")){
-					String type = s.substring(3);
-					resultMap.put("type", type);
-				}
+			}
+			if(rs3.equals("30P")){
+				String type = s.substring(3);
+				resultMap.put("type", type);
 			}
 		}
+		
 		resultMap.put("zdCode", zdcode);
 		
 		PUID p = puidService.findOneByMachineIDAndRDt(puid);
@@ -166,9 +203,12 @@ public class PuidController {
 		if(p!=null) {
 			resultMap.put("id", p.getId()+"");
 			resultMap.put("match", "match");
+			
 		}else {
 			resultMap.put("match", "nomatch");
 		}
+		
+		
 		
 		mapper.writeValue(out, resultMap);
 	}
@@ -187,10 +227,14 @@ public class PuidController {
 		Date date = new Date();
 		puid.setoDt(date);
 		puid.setOperatorId(user.getCoreid());
+		
 		//是否存在这一批料（PUID除去前两位）
 		String puidstr = puid.getPuid();
 		puidstr = puidstr.substring(2);
-		List<PUID> ps = puidService.findSameBoxPUID();
+		List<PUID> ps = puidService.findSameBoxPUID(puidstr, puid.getMachineId());
+		
+		puid.setLocal(null);
+		puid.setStoreck(0);
 		
 		//如果不存在，则进入添加环节
 		if(ps.size()==0) {
@@ -311,22 +355,22 @@ public class PuidController {
 	@RequestMapping("/findPuidCheckByPUID.do")
 	public void findPuidCheckByPUID(PUID puid , HttpServletResponse response ,HttpSession session) throws IOException {
 		
-//		List<PUID> puids = puidService.findPuidCheckByPUIDAndDate(puid);
-//		
-//		Map<String , Object> resultMap = new HashMap<String , Object>();
-//		
-//		//把接收到的User转为json,使用jackson工具库
-//		ObjectMapper mapper = new ObjectMapper();
-//		
-//		//通过应答对象输出数据给浏览器
-//		OutputStream out = response.getOutputStream();
-//		
-//		resultMap.put("code", 0);
-//		resultMap.put("msg", "");
-//		resultMap.put("count", 29);
-//		resultMap.put("data", puids);
-//		
-//		mapper.writeValue(out, resultMap);
+		List<PUID> puids = puidService.findPuidCheckByPUID(puid);
+
+		Map<String , Object> resultMap = new HashMap<String , Object>();
+		
+		//把接收到的User转为json,使用jackson工具库
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//通过应答对象输出数据给浏览器
+		OutputStream out = response.getOutputStream();
+		
+		resultMap.put("code", 0);
+		resultMap.put("msg", "");
+		resultMap.put("count", 29);
+		resultMap.put("data", puids);
+		
+		mapper.writeValue(out, resultMap);
 		
 	}
 	

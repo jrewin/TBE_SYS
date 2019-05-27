@@ -107,25 +107,27 @@
 							<div class="layui-inline">
 								<label class="layui-form-label">LOCAL</label>
 								<div class="layui-inline">
-									<select name="local" id="local" lay-filter="selectlocal">
-										<option value="请选择"></option>
+									<select name="local" id="local">  <%-- lay-filter="selectlocal"--%>
+										<option value="请选择" selected="selected"></option>
 										<c:forEach var="local" items="${sessionScope.locals}">
 											<option value="${local.lN }|${local.color }">${local.lN}</option>
 										</c:forEach>
 									</select>
 								</div>
 							</div>
+							<%--
 							<div class="layui-inline">
 								<div class="layui-input-inline">
 									<input type="text" readonly="readonly" id="showcolor" class="layui-input">
 								</div>
 							</div>
+							 --%>
 						</div>
 						<div class="layui-form-item">
 							<button class="layui-btn layui-btn-normal layui-btn-fluid" lay-submit lay-filter="enter" >确认</button>
 						</div>
 						<div class="layui-form-item">
-							<button type="reset" class="layui-btn layui-btn-primary layui-btn-fluid">重置</button>
+							<button class="layui-btn layui-btn-primary layui-btn-fluid" lay-submit lay-filter="reset" >重置</button>
 						</div>
 						<input type="hidden" id="matchValue" value="0">
 						<input type="hidden" id="id">
@@ -153,6 +155,10 @@ layui.use(['table','form'], function(){
 	var table = layui.table
 	, form = layui.form
 	, $ = layui.$;
+	
+	form.on('submit(reset)', function(data){
+		location.href = "page2.jsp";
+	})
 	
 	form.on('submit(enter)', function(data){
 	  //console.log(data.field.local) //当前容器的全部表单字段，名值对形式：{name: value}
@@ -201,6 +207,8 @@ layui.use(['table','form'], function(){
 				$("#match").html("");
 				$("#matchValue").val(0);
 				$("#showcolor").css("background-color" ,  "#FFFFFF");
+				$("#local").find("option[value='请选择']").attr("selected",true);
+				$('#local').removeAttr("disabled");
 			 	tableIns.reload({
 					url:'puid/findByMachineId.do'
 					,where: { //设定异步数据接口的额外参数，任意设
@@ -212,7 +220,7 @@ layui.use(['table','form'], function(){
 			}
 		})
 	  }
-	   
+	  form.render();
 	  return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
 	});
 	
@@ -247,15 +255,28 @@ layui.use(['table','form'], function(){
 								$("#match").html("匹配");
 								$("#matchValue").val(1);
 								$("#id").val(resp.id);
+								
+								if(resp.local != "none"){
+									var lcl = resp.local+'|green';
+									$("#local").find("option[value='"+ lcl +"']").attr("selected",true);
+									//$("#local").css("background-color" , "green");
+									$('#local').attr("disabled","disabled");
+								}else{
+									$("#local").find("option[value='请选择']").attr("selected",true);
+									$('#local').removeAttr("disabled");
+								}
+								
 							}else{
 								$("#match").css("background-color" ,  "#FFB800");
 								$("#match").html("不匹配");
 								$("#matchValue").val(0);
 							}
+							form.render();
 						}
 					}
 				})
 			}
+			form.render();
             return false;
         }
 	});
@@ -286,15 +307,17 @@ layui.use(['table','form'], function(){
 			}
 		})
 		$("#lot_num").focus();
+		form.render();
 	});
 	
+	/*
 	form.on('select(selectlocal)', function(data){ 
 		var dt = data.value.split('|');
 		console.log(dt[1]);
 		$("#showcolor").css("background-color" , dt[1]);
 		
 	});
-
+	*/
 	$("#logout").click(function(){
 		layer.confirm('确定注销并切换用户？', {
 			btn: ['确认','取消'] //按钮

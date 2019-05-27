@@ -12,7 +12,9 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tbe.beans.Record;
@@ -25,11 +27,32 @@ public class RecordsController {
 	
 	@Autowired
 	private RecordsService recordsService;
+	
+	@RequestMapping(value = "/findRecordsBySelection.do" ,method = RequestMethod.POST)
+	public void findRecordsBySelection(@RequestBody Record record ,HttpServletResponse response ,HttpSession session) throws IOException {
+
+		List<Record> puids = recordsService.findRecordsBySelection(record);
 		
-	@RequestMapping("/findRecordsBySelection.do")
-	public void findRecordsBySelection(HttpServletResponse response ,HttpSession session) throws IOException {
+		Map<String , Object> resultMap = new HashMap<String , Object>();
 		
-		List<Record> puids = recordsService.findRecordsBySelection();
+		//把接收到的User转为json,使用jackson工具库
+		ObjectMapper mapper = new ObjectMapper();
+		
+		//通过应答对象输出数据给浏览器
+		OutputStream out = response.getOutputStream();
+		
+		resultMap.put("code", 0);
+		resultMap.put("msg", "");
+		resultMap.put("count", 29);
+		resultMap.put("data", puids);
+		
+		mapper.writeValue(out, resultMap);
+	}
+		
+	@RequestMapping("/findErroRecordsBySelection.do")
+	public void findErroRecordsBySelection(HttpServletResponse response ,HttpSession session) throws IOException {
+		
+		List<Record> puids = recordsService.findErroRecordsBySelection();
 		
 		Map<String , Object> resultMap = new HashMap<String , Object>();
 		

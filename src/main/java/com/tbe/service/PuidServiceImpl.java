@@ -84,11 +84,13 @@ public class PuidServiceImpl implements PuidService {
 	}
 
 	@Override
-	public List<PUID> findSameBoxPUID() {
+	public List<PUID> findSameBoxPUID(String puidstr , String machineId) {
 		
 		PUIDExample example = new PUIDExample();
 		Criteria criteria = example.createCriteria();
-		criteria.andRDtIsNull();
+		criteria.andPuidLike("__" + puidstr);
+		criteria.andMachineIdEqualTo(machineId);
+		//criteria.andRDtIsNull();
 	
 		List<PUID> p = puidMapper.selectByExample(example);
 		
@@ -106,6 +108,19 @@ public class PuidServiceImpl implements PuidService {
 		List<PUID> p = puidMapper.selectByExample(example);
 		
 		return p.size()==0?null:p.get(0);
+	}
+
+	/**
+	 * 根据PUID查询puid列表
+	 */
+	@Override
+	public List<PUID> findPuidCheckByPUID(PUID puid) {
+		
+		PUIDExample example = new PUIDExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andPuidLike("%" + puid.getPuid() + "%");
+		
+		return puidMapper.selectByExample(example);
 	}
 
 }

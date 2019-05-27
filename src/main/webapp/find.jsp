@@ -53,22 +53,10 @@
 			<div class="layui-card">
 				<div class="layui-card-body" style="text-align:center;">
 					<div class="layui-form-item">
-						<div class="layui-inline">
-						    <div class="layui-input-block">
-						      <input type="radio" name="tableName" value="puid_check" title="puid_check" checked="">
-						      <input type="radio" name="tableName" value="records" title="records">
-						    </div>
-						</div>
 					    <div class="layui-inline">
 					    	<label class="layui-form-label">PUID</label>
 					    	<div class="layui-input-inline">
 					        	<input id="pid_num" type="text" name="puid" autocomplete="off" class="layui-input">
-					    	</div>
-					    </div>
-					    <div class="layui-inline">
-					    	<label class="layui-form-label">日期选择</label>
-					   		<div class="layui-input-block">
-					        	<input type="text" name="date" id="date1" autocomplete="off" class="layui-input">
 					    	</div>
 					    </div>
 					    <div class="layui-inline">
@@ -89,74 +77,70 @@
 				</div>
 			</div>
 		</div>
-		<div class="layui-col-md12">
-			<div class="layui-card">
-				<div class="layui-card-body">
-					<table class="layui-hide" id="test2"></table>
-				</div>
-			</div>
-		</div>
 	</div>
 </div> 
 <script src="layui/layui.js" charset="utf-8"></script>
 <script type="text/javascript">
-layui.use(['table','form','laydate'], function(){
+layui.use(['table','form','laydate','laytpl','util'], function(){
 	var table = layui.table
 	, form = layui.form
 	, laydate = layui.laydate
-	, $ = layui.$;
-	
-	//日期
-    laydate.render({
-      elem: '#date1'
-    });
+	, $ = layui.$
+	, util = layui.util;
 	
     var tableIns = table.render({
 	    elem: '#test1'
-	    ,cellMinWidth: 100 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
 	    ,cols: [[
-	      {field:'puid', title: 'puid_check'}
+	      {field:'puid', title: 'PUID'}
+	      ,{field:'zdCode', title: '二维码'}
+	      ,{field:'machineId', title: '机器名'}
+	      ,{field:'oDt', title: 'Operate时间', templet: function(d){
+    	 	if(d.oDt != null){
+    	 		//console.log(d.checkDt);
+    	 		return layui.util.toDateString(d.oDt, 'yyyy-MM-dd HH:mm:ss');
+    	 	}else{
+    	 		return "";
+    	 	}
+		  }}
+	      ,{field:'operatorId', title: 'Operator ID'}
+	      ,{field:'passDt', title: 'Pass时间', templet: function(d){
+	    	 	if(d.passDt != null){
+	    	 		//console.log(d.checkDt);
+	    	 		return layui.util.toDateString(d.passDt, 'yyyy-MM-dd HH:mm:ss');
+	    	 	}else{
+	    	 		return "";
+	    	 	}
+		  }}
+	      ,{field:'checkId', title: 'Check ID'}
+	      ,{field:'rDt', title: 'Return时间', templet: function(d){
+	    	 	if(d.rDt != null){
+	    	 		//console.log(d.checkDt);
+	    	 		return layui.util.toDateString(d.rDt, 'yyyy-MM-dd HH:mm:ss');
+	    	 	}else{
+	    	 		return "";
+	    	 	}
+		  }}
+	      ,{field:'rId', title: 'Return ID'}
+	      ,{field:'local', title: 'Location'}
 	    ]]
 	});
-	var tableIns = table.render({
-	    elem: '#test2'
-	    ,cellMinWidth: 100 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
-	    ,cols: [[
-	      {field:'puid', title: 'records'}
-	    ]]
-	});
-	
-	form.on('submit(find)', function(data){
+
+    form.on('submit(find)', function(data){
 	  console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
 	  
 	  if(data.field.puid == ""){
 		  layer.alert("请输入PUID...", {icon: 7});
-	  }else if(data.field.date == ""){
-		  layer.alert("请选择日期...", {icon: 7});
 	  }else{
-		  if(data.field.tableName=="puid_check"){
-			  tableIns.reload({
-					url:'puid/findPuidCheckByPUID.do'
-					,where: { //设定异步数据接口的额外参数，任意设
-						puid: data.field.puid
-						/*哪个字段？
-						oDt: 
-						passDt:
-						*/
-					}
-				});
-		  }
-		  if(data.field.tableName=="records"){
-			  tableIns.reload({
-					url:'records/findRecordsByPUID.do'
-					,where: { //设定异步数据接口的额外参数，任意设
-						/*哪个字段？
-						sourcePuid: data.field.puid
-						scanPuid: data.field.puid
-						*/
-					}
-				});
-		  }
+		  tableIns.reload({
+				url:'puid/findPuidCheckByPUID.do'
+				,where: { //设定异步数据接口的额外参数，任意设
+					puid: data.field.puid
+					/*哪个字段？
+					oDt: 
+					passDt:
+					*/
+				}
+			});
 	  }
 	  
 	  form.render();

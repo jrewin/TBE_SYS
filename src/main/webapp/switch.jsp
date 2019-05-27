@@ -56,14 +56,25 @@
 				</div>
 			</div>
 		</div>
+		<div class="layui-col-md3">
+			<div class="layui-card">
+				<div class="layui-card-body">
+					<a href="<%=request.getContextPath()%>/find.jsp" class="x-admin-backlog-body">
+                        <img src="img/find.png"  style="height: 70px;"/>
+                        <br/>
+                        <span class="tip">对比记录查询</span>
+                    </a>
+				</div>
+			</div>
+		</div>
 		<c:if test="${sessionScope.user.lv == 4 }">
 		<div class="layui-col-md3">
 			<div class="layui-card">
 				<div class="layui-card-body">
 					<a href="<%=request.getContextPath()%>/find1.jsp" class="x-admin-backlog-body">
-                        <img src="img/find.png"  style="height: 70px;"/>
+                        <img src="img/caozuo.png"  style="height: 70px;"/>
                         <br/>
-                        <span class="tip">查询</span>
+                        <span class="tip">操作记录查询</span>
                     </a>
 				</div>
 			</div>

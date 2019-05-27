@@ -116,7 +116,7 @@
 							<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="save">确认</button>
 						</div>
 						<div class="layui-form-item">
-							<button type="reset" class="layui-btn layui-btn-primary layui-btn-fluid">重置</button>
+							<button class="layui-btn layui-btn-primary layui-btn-fluid" lay-submit lay-filter="reset" >重置</button>
 						</div>
 					</form>
 				 </div>
@@ -140,6 +140,10 @@ layui.use(['table','form'], function(){
 	var table = layui.table
 	, form = layui.form
 	, $ = layui.$;
+	
+	form.on('submit(reset)', function(data){
+		location.href = "page1.jsp";
+	})
 	
 	form.on('submit(save)', function(data){
 	  console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
